@@ -33,7 +33,12 @@ export default async (request) => {
 }
     if(!answer)return Response.json({error:'Gemini no devolvió texto. Prueba otra pregunta.'},{status:502});
     return Response.json({answer},{headers:{'Cache-Control':'no-store'}});
-  }catch(e){return Response.json({error:'Error de conexión con Gemini. Intenta nuevamente.'},{status:502})}
+ }catch(e){
+  console.error('Fallo de conexión:', e);
+  return Response.json({
+    error:'Error de conexión con Gemini. Revisa los registros de Netlify.'
+  },{status:502});
+}
   finally{clearTimeout(timeout)}
 };
 export const config={path:'/.netlify/functions/chat'};
