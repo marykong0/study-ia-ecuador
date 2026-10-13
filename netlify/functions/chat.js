@@ -14,7 +14,32 @@ export default async (request) => {
       method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
       body:JSON.stringify({systemInstruction:{parts:[{text:PROMPT}]},contents:clean,generationConfig:{temperature:0.35,maxOutputTokens:900}}),signal:controller.signal
     });
-    const result=await upstream.json();
+  
+const result = await upstream.json();
+
+if (!upstream.ok) {
+  const detail = result?.error?.message || 'Sin detalles adicionales';
+  console.error('Error de Gemini:', upstream.status, detail);
+  return Response.json({
+    error: 'Gemini devolvió un error (' + upstream.status + ').'
+  }, { status: 502 });
+}
+
+const answer = result?.candidates?.[0]?.content?.parts
+  ?.map(p => p.text || '')
+  .join('')
+  .trim();
+
+if (!answer) {
+  return Response.json({
+    error: 'Gemini no devolvió texto.'
+  }, { status: 502 });
+}
+
+return Response.json({ answer }, {
+  headers: { 'Cache-Control': 'no-store' }
+});
+  
    if (!upstream.ok) {
   const code = upstream.status;
   const detail = result?.error?.message || 'Sin detalles adicionales';
