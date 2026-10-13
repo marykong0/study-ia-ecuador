@@ -32,7 +32,16 @@ export default async (request) => {
   }, { status: code === 429 ? 429 : 502 });
 }
     if(!answer)return Response.json({error:'Gemini no devolvió texto. Prueba otra pregunta.'},{status:502});
-    return Response.json({answer},{headers:{'Cache-Control':'no-store'}});
+   const answer = result?.candidates?.[0]?.content?.parts
+  ?.map(p => p.text || '')
+  .join('')
+  .trim();
+
+if (!answer) {
+  return Response.json({
+    error: 'Gemini no devolvió texto. Prueba otra pregunta.'
+  }, { status: 502 });
+}
  }catch(e){
   console.error('Fallo de conexión:', e);
   return Response.json({
