@@ -1,0 +1,9 @@
+STUDY IA — GEMINI
+
+1. Comprueba en Netlify > Project configuration > Environment variables que GEMINI_API_KEY esté guardada con alcance Functions.
+2. En Netlify, abre tu sitio existente monumental-naiad-e2f8b9.
+3. IMPORTANTE: Netlify Drop de HTML puede no desplegar funciones. Para desplegar la función de forma fiable, usa un repositorio GitHub conectado a Netlify con estos archivos (index.html, netlify.toml y netlify/functions/chat.js). Publica en el MISMO sitio para conservar el QR.
+4. Tras el despliegue, comprueba en Netlify > Logs > Functions que chat esté disponible.
+5. Prueba preguntas de historia del Ecuador.
+6. La versión no se apaga automáticamente en una semana: desactiva GEMINI_API_KEY o despublica el sitio al terminar.
+7. Las cuotas gratuitas no están garantizadas. Evita publicar la clave en HTML. No incluye limitación fiable por usuario: para acceso público sostenido añade rate limiting y protección contra abuso.
