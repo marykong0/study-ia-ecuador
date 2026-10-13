@@ -10,7 +10,7 @@ export default async (request) => {
   if(clean.some(m=>!m.parts[0].text.trim())) return Response.json({error:'Pregunta vacía'},{status:400});
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),20000);
   try{
-    const upstream=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{
+    const upstream=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent',{
       method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
       body:JSON.stringify({systemInstruction:{parts:[{text:PROMPT}]},contents:clean,generationConfig:{temperature:0.35,maxOutputTokens:900}}),signal:controller.signal
     });
