@@ -15,8 +15,22 @@ export default async (request) => {
       body:JSON.stringify({systemInstruction:{parts:[{text:PROMPT}]},contents:clean,generationConfig:{temperature:0.35,maxOutputTokens:900}}),signal:controller.signal
     });
     const result=await upstream.json();
-    if(!upstream.ok){const code=upstream.status;return Response.json({error:code===429?'Se alcanzó el límite temporal de consultas de Gemini. Intenta más tarde.':code===403||code===401?'Gemini rechazó la clave o los permisos. Comprueba Google AI Studio.':'Gemini no respondió correctamente ('+code+').'},{status:code===429?429:502})}
-    const answer=result?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('').trim();
+   if (!upstream.ok) {
+  const code = upstream.status;
+  const detail = result?.error?.message || 'Sin detalles adicionales';
+
+  console.error('Error de Gemini:', code, detail);
+
+  return Response.json({
+    error: code === 404
+      ? 'Gemini 404: el modelo solicitado no está disponible para esta clave o versión de API.'
+      : code === 429
+      ? 'Se alcanzó el límite de consultas de Gemini.'
+      : code === 401 || code === 403
+      ? 'Gemini rechazó la clave o los permisos.'
+      : 'Gemini devolvió un error (' + code + ').'
+  }, { status: code === 429 ? 429 : 502 });
+}
     if(!answer)return Response.json({error:'Gemini no devolvió texto. Prueba otra pregunta.'},{status:502});
     return Response.json({answer},{headers:{'Cache-Control':'no-store'}});
   }catch(e){return Response.json({error:'Error de conexión con Gemini. Intenta nuevamente.'},{status:502})}
